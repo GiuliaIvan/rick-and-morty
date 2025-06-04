@@ -1,0 +1,50 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment variables
+.env
+.env.*
+
+# Compiled output
+dist/
+build/
+coverage/
+
+# Optional npm cache directory
+.npm/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific folders
+.vscode/
+.idea/
+
+# Next.js / frontend tools (in case any subproject has it)
+.next/
+out/
+
+# Project-specific
+*.log
+*.sqlite
+*.sqlite3
+*.bak
+*.tmp
+
+# Generated folders
+*.tgz
+
+# Others
+*.swp
