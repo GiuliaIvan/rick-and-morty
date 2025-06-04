@@ -1,20 +1,13 @@
-import { Fragment, useEffect, useState } from "react";
-import CharacterDetails from "./CharacterDetails";
-
-type Character = {
-  id: number;
-  name: string;
-  gender: string;
-  status: string;
-  species: string;
-  location: { name: string };
-  origin: { name: string };
-  image: string;
-  episode: string[];
-};
+import { useEffect, useState } from "react";
+// import CharacterDetails from "./components/CharacterDetails";
+import type { Character } from "./types/character";
+import SearchBar from "./components/SearchBar";
+import Pagination from "./components/Pagination";
+import CharacterTable from "./components/CharactersTable";
 
 function App() {
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [allCharacters, setAllCharacters] = useState<Character[]>([]);
   const [search, setSearch] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [page, setPage] = useState(1); // Track current page
@@ -24,25 +17,52 @@ function App() {
   useEffect(() => {
     const fetchCharacters = async () => {
       setLoading(true);
-      const res = await fetch(
-        `https://rickandmortyapi.com/api/character?page=${page}`
-      );
-      const data = await res.json();
-      setCharacters(data.results);
-      setTotalPages(data.info.pages);
+
+      if (search === "") {
+        // Fetch only one page
+        const res = await fetch(
+          `https://rickandmortyapi.com/api/character?page=${page}`
+        );
+        const data = await res.json();
+        setCharacters(data.results);
+        setTotalPages(data.info.pages);
+        setAllCharacters([]); // Clear previous search data
+      } else {
+        // Search active: fetch ALL characters once
+        let all: Character[] = [];
+        let nextUrl: string | null =
+          "https://rickandmortyapi.com/api/character";
+
+        while (nextUrl) {
+          const res = await fetch(nextUrl);
+          const data = await res.json();
+          all = [...all, ...data.results];
+          nextUrl = data.info.next;
+        }
+
+        setAllCharacters(all);
+      }
+
       setLoading(false);
     };
 
     fetchCharacters();
-  }, [page]);
+  }, [page, search]);
 
   function toggleExpand(id: number) {
-    if (expandedId === id) {
-      setExpandedId(null);
-    } else {
-      setExpandedId(id);
-    }
+    setExpandedId((prev) => (prev === id ? null : id));
   }
+
+  // const charactersToShow = (search === "" ? characters : allCharacters).filter(
+  //   (char) => char.name.toLowerCase().startsWith(search.toLowerCase())
+  // );
+
+  const charactersToShow =
+    search === ""
+      ? characters
+      : allCharacters.filter((char) =>
+          char.name.toLowerCase().startsWith(search.toLowerCase())
+        );
 
   return (
     <div style={{ padding: "20px" }}>
@@ -55,89 +75,35 @@ function App() {
       </div>
 
       <h1>Characters</h1>
-      <input
-        type="text"
-        placeholder="Search"
+
+      <SearchBar
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ padding: "8px", marginBottom: "16px", width: "300px" }}
+        onChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
       />
 
       {loading ? (
         <p>Loading...</p>
+      ) : charactersToShow.length === 0 ? (
+        <p>No character found.</p>
       ) : (
-        <table
-          border={1}
-          cellPadding={10}
-          style={{ borderCollapse: "collapse", width: "100%" }}
-        >
-          <thead>
-            <tr style={{ textAlign: "left" }}>
-              <th>Name</th>
-              <th>Gender</th>
-              <th>Status</th>
-              <th>Species</th>
-              <th>Location</th>
-              <th>Episodes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {characters.map((char) => (
-              <Fragment key={char.id}>
-                <tr
-                  onClick={() => toggleExpand(char.id)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>
-                    {expandedId === char.id ? "▼" : "▶"} &nbsp;
-                    {char.name}
-                  </td>
-                  <td>{char.gender}</td>
-                  <td>{char.status}</td>
-                  <td>{char.species}</td>
-                  <td>{char.location.name}</td>
-                  <td>{char.episode.length}</td>
-                </tr>
-
-                {expandedId === char.id && (
-                  <tr>
-                    <td colSpan={6}>
-                      <CharacterDetails character={char} />
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
+        <CharacterTable
+          charactersToShow={charactersToShow}
+          expandedId={expandedId}
+          onToggleExpand={toggleExpand}
+        />
       )}
 
-      {/* Pagination buttons */}
-      <div
-        style={{
-          marginTop: "20px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "50px",
-        }}
-      >
-        <button
-          onClick={() => setPage((p) => Math.max(p - 1, 1))}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        <span>
-          Page {page} of {totalPages}
-        </span>
-        <button
-          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-          disabled={page === totalPages}
-        >
-          Next
-        </button>
-      </div>
+      {/* Pagination buttons - only show when not searching */}
+      {search === "" && (
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      )}
     </div>
   );
 }
