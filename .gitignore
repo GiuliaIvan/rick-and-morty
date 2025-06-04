@@ -1,50 +1,24 @@
-# Node.js dependencies
-node_modules/
-
 # Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+node_modules
+dist
+dist-ssr
+*.local
 
-# dotenv environment variables
-.env
-.env.*
-
-# Compiled output
-dist/
-build/
-coverage/
-
-# Optional npm cache directory
-.npm/
-
-# OS-specific files
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
-
-# Editor-specific folders
-.vscode/
-.idea/
-
-# Next.js / frontend tools (in case any subproject has it)
-.next/
-out/
-
-# Project-specific
-*.log
-*.sqlite
-*.sqlite3
-*.bak
-*.tmp
-
-# Generated folders
-*.tgz
-
-# Others
-*.swp
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
