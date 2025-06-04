@@ -17,18 +17,24 @@ function App() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [search, setSearch] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [page, setPage] = useState(1); // Track current page
+  const [totalPages, setTotalPages] = useState(1); // Will get from API
+  const [loading, setLoading] = useState(true); // To show a loading state
 
   useEffect(() => {
-    fetch(`https://rickandmortyapi.com/api/character?name=${search}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.results) {
-          setCharacters(data.results);
-        } else {
-          setCharacters([]);
-        }
-      });
-  }, [search]);
+    const fetchCharacters = async () => {
+      setLoading(true);
+      const res = await fetch(
+        `https://rickandmortyapi.com/api/character?page=${page}`
+      );
+      const data = await res.json();
+      setCharacters(data.results);
+      setTotalPages(data.info.pages);
+      setLoading(false);
+    };
+
+    fetchCharacters();
+  }, [page]);
 
   function toggleExpand(id: number) {
     if (expandedId === id) {
@@ -47,6 +53,7 @@ function App() {
           alt="Rick and Morty logo png"
         />
       </div>
+
       <h1>Characters</h1>
       <input
         type="text"
@@ -55,50 +62,82 @@ function App() {
         onChange={(e) => setSearch(e.target.value)}
         style={{ padding: "8px", marginBottom: "16px", width: "300px" }}
       />
-      <table
-        border={1}
-        cellPadding={10}
-        style={{ borderCollapse: "collapse", width: "100%" }}
-      >
-        <thead>
-          <tr style={{textAlign: "left"}}>
-            <th>Name</th>
-            <th>Gender</th>
-            <th>Status</th>
-            <th>Species</th>
-            <th>Location</th>
-            <th>Episodes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {characters.map((char) => (
-            <Fragment key={char.id}>
-              <tr
-                onClick={() => toggleExpand(char.id)}
-                style={{ cursor: "pointer" }}
-              >
-                <td>
-                  {expandedId === char.id ? "▼" : "▶"} &nbsp;
-                  {char.name}
-                </td>
-                <td>{char.gender}</td>
-                <td>{char.status}</td>
-                <td>{char.species}</td>
-                <td>{char.location.name}</td>
-                <td>{char.episode.length}</td>
-              </tr>
 
-              {expandedId === char.id && (
-                <tr>
-                  <td colSpan={6}>
-                    <CharacterDetails character={char} />
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <table
+          border={1}
+          cellPadding={10}
+          style={{ borderCollapse: "collapse", width: "100%" }}
+        >
+          <thead>
+            <tr style={{ textAlign: "left" }}>
+              <th>Name</th>
+              <th>Gender</th>
+              <th>Status</th>
+              <th>Species</th>
+              <th>Location</th>
+              <th>Episodes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {characters.map((char) => (
+              <Fragment key={char.id}>
+                <tr
+                  onClick={() => toggleExpand(char.id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>
+                    {expandedId === char.id ? "▼" : "▶"} &nbsp;
+                    {char.name}
                   </td>
+                  <td>{char.gender}</td>
+                  <td>{char.status}</td>
+                  <td>{char.species}</td>
+                  <td>{char.location.name}</td>
+                  <td>{char.episode.length}</td>
                 </tr>
-              )}
-            </Fragment>
-          ))}
-        </tbody>
-      </table>
+
+                {expandedId === char.id && (
+                  <tr>
+                    <td colSpan={6}>
+                      <CharacterDetails character={char} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {/* Pagination buttons */}
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "50px",
+        }}
+      >
+        <button
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          disabled={page === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

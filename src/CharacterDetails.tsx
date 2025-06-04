@@ -102,10 +102,10 @@ function CharacterDetails({ character }: { character: Character }) {
       </div>
       <img
         style={{
-          width: "100px",
-          height: "100px",
+          width: "200px",
+          height: "200px",
           objectFit: "cover",
-          borderRadius: "8px",
+          //borderRadius: "50%",
           boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
         }}
         src={character.image}
