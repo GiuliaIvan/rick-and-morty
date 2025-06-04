@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 
 // Define the types we need
 type Character = {
+  id: number;
   name: string;
-  image: string;
+  gender: string;
+  status: string;
+  species: string;
   origin: { name: string };
   location: { name: string };
   episode: string[];
+  image: string;
 };
 
 type Episode = {
@@ -38,7 +42,64 @@ function CharacterDetails({ character }: { character: Character }) {
   }, [character]);
 
   return (
-    <div style={{ display: "flex", gap: "16px" }}>
+    <div
+      style={{ display: "flex", gap: "16px", justifyContent: "space-between" }}
+    >
+      <div>
+        <p>
+          <strong>Name:</strong> {character.name}
+        </p>
+        <p>
+          <strong>Gender:</strong> {character.gender}
+        </p>
+        <p>
+          <strong>Status:</strong> {character.status}
+        </p>
+        <p>
+          <strong>Species:</strong> {character.species}
+        </p>
+        <p>
+          <strong>Origin:</strong> {character.origin.name}
+        </p>
+        <p>
+          <strong>Location:</strong> {character.location.name}
+        </p>
+        <p>
+          <strong>Episodes:</strong>
+        </p>
+        <table
+          border={1}
+          cellPadding={10}
+          style={{
+            borderCollapse: "collapse",
+            width: "100%",
+            marginBottom: "20px",
+          }}
+        >
+          <thead>
+            <tr style={{ textAlign: "left" }}>
+              <th>Name</th>
+              <th>Season</th>
+              <th>Episode</th>
+            </tr>
+          </thead>
+          <tbody>
+            {episodes.map((ep) => {
+              const match = ep.episode.match(/^S(\d+)E(\d+)$/);
+              const season = match ? match[1] : "N/A";
+              const episodeNum = match ? match[2] : "N/A";
+
+              return (
+                <tr key={ep.id}>
+                  <td>{ep.name}</td>
+                  <td>{season}</td>
+                  <td>{episodeNum}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       <img
         style={{
           width: "100px",
@@ -50,24 +111,6 @@ function CharacterDetails({ character }: { character: Character }) {
         src={character.image}
         alt={character.name}
       />
-      <div>
-        <p>
-          <strong>Origin:</strong> {character.origin.name}
-        </p>
-        <p>
-          <strong>Location:</strong> {character.location.name}
-        </p>
-        <p>
-          <strong>Episodes:</strong>
-        </p>
-        <ul>
-          {episodes.map((ep) => (
-            <li key={ep.id}>
-              {ep.name} ({ep.episode})
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }
