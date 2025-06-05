@@ -8,16 +8,25 @@ function CharacterRow({ character }: { character: Character }) {
 
   useEffect(() => {
     const fetchEpisodes = async () => {
-      const urls = character.episode;
-      const episodeIds = urls.map((url) => url.split("/").pop());
-      const joinedIds = episodeIds.join(",");
+      try {
+        const urls = character.episode;
+        const episodeIds = urls.map((url) => url.split("/").pop());
+        const joinedIds = episodeIds.join(",");
 
-      const res = await fetch(
-        `https://rickandmortyapi.com/api/episode/${joinedIds}`
-      );
-      const data = await res.json();
+        const res = await fetch(
+          `https://rickandmortyapi.com/api/episode/${joinedIds}`
+        );
 
-      setEpisodes(Array.isArray(data) ? data : [data]);
+        if (!res.ok) {
+          throw new Error(`HTTP error status ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        setEpisodes(Array.isArray(data) ? data : [data]);
+      } catch (error) {
+        console.error("Failed to fetch episodes:", error);
+      }
     };
 
     fetchEpisodes();

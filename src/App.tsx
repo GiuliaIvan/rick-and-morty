@@ -17,29 +17,38 @@ function App() {
     const fetchCharacters = async () => {
       setLoading(true);
 
-      if (search === "") {
-        // Fetch only one page
-        const res = await fetch(
-          `https://rickandmortyapi.com/api/character?page=${page}`
-        );
-        const data = await res.json();
-        setCharacters(data.results);
-        setTotalPages(data.info.pages);
-        setAllCharacters([]); // Clear previous search data
-      } else {
-        // Search active: fetch ALL characters once
-        let all: Character[] = [];
-        let nextUrl: string | null =
-          "https://rickandmortyapi.com/api/character";
+      try {
+        if (search === "") {
+          // Fetch only one page
+          const res = await fetch(
+            `https://rickandmortyapi.com/api/character?page=${page}`
+          );
 
-        while (nextUrl) {
-          const res = await fetch(nextUrl);
+          if (!res.ok) {
+            throw new Error(`HTTP error status ${res.status}`);
+          }
+
           const data = await res.json();
-          all = [...all, ...data.results];
-          nextUrl = data.info.next;
-        }
+          setCharacters(data.results);
+          setTotalPages(data.info.pages);
+          setAllCharacters([]); // Clear previous search data
+        } else {
+          // Search active: fetch ALL characters once
+          let all: Character[] = [];
+          let nextUrl: string | null =
+            "https://rickandmortyapi.com/api/character";
 
-        setAllCharacters(all);
+          while (nextUrl) {
+            const res = await fetch(nextUrl);
+            const data = await res.json();
+            all = [...all, ...data.results];
+            nextUrl = data.info.next;
+          }
+
+          setAllCharacters(all);
+        }
+      } catch (error) {
+        console.error("Failed to fetch characters:", error);
       }
 
       setLoading(false);
