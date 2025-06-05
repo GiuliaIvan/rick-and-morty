@@ -5,9 +5,12 @@ import CharacterInfo from "./CharacterInfo";
 
 function CharacterRow({ character }: { character: Character }) {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEpisodes = async () => {
+      setLoading(true);
+
       try {
         const urls = character.episode;
         const episodeIds = urls.map((url) => url.split("/").pop());
@@ -27,6 +30,8 @@ function CharacterRow({ character }: { character: Character }) {
       } catch (error) {
         console.error("Failed to fetch episodes:", error);
       }
+
+      setLoading(false);
     };
 
     fetchEpisodes();
@@ -37,14 +42,17 @@ function CharacterRow({ character }: { character: Character }) {
       style={{ display: "flex", gap: "16px", justifyContent: "space-between" }}
     >
       <div>
-        <CharacterInfo character={character} episodes={episodes} />
+        {loading ? (
+          <p>Loading character info...</p>
+        ) : (
+          <CharacterInfo character={character} episodes={episodes} />
+        )}
       </div>
       <img
         style={{
           width: "200px",
           height: "200px",
           objectFit: "cover",
-          //borderRadius: "50%",
           boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
         }}
         src={character.image}

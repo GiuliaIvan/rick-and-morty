@@ -9,9 +9,9 @@ function App() {
   const [allCharacters, setAllCharacters] = useState<Character[]>([]);
   const [search, setSearch] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [page, setPage] = useState(1); // Track current page
-  const [totalPages, setTotalPages] = useState(1); // Will get from API
-  const [loading, setLoading] = useState(true); // To show a loading state
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -60,10 +60,6 @@ function App() {
   function toggleExpand(id: number) {
     setExpandedId((prev) => (prev === id ? null : id));
   }
-
-  // const charactersToShow = (search === "" ? characters : allCharacters).filter(
-  //   (char) => char.name.toLowerCase().startsWith(search.toLowerCase())
-  // );
 
   const charactersToShow =
     search === ""
