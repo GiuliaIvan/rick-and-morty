@@ -1,4 +1,5 @@
 import type { Episode } from "../types/episode";
+import { Fragment } from "react";
 
 type Props = {
   episodes: Episode[];
@@ -6,7 +7,7 @@ type Props = {
 
 function EpisodeTable({ episodes }: Props) {
   return (
-    <>
+    <Fragment>
       <p>
         <strong>Episodes:</strong>
       </p>
@@ -42,7 +43,7 @@ function EpisodeTable({ episodes }: Props) {
           })}
         </tbody>
       </table>
-    </>
+    </Fragment>
   );
 }
 

@@ -1,5 +1,5 @@
 import type { Character } from "../types/character";
-import CharacterDetails from "./CharacterRow";
+import CharacterRow from "./CharacterRow";
 import { Fragment } from "react";
 
 type Props = {
@@ -48,7 +48,7 @@ function CharacterTable({
             {expandedId === char.id && (
               <tr>
                 <td colSpan={6}>
-                  <CharacterDetails character={char} />
+                  <CharacterRow character={char} />
                 </td>
               </tr>
             )}

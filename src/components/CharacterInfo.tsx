@@ -1,6 +1,7 @@
 import type { Character } from "../types/character";
 import type { Episode } from "../types/episode";
 import EpisodeTable from "./EpisodeTable";
+import { Fragment } from "react";
 
 type Props = {
   character: Character;
@@ -9,7 +10,7 @@ type Props = {
 
 function CharacterInfo({ character, episodes }: Props) {
   return (
-    <>
+    <Fragment>
       <p>
         <strong>Name:</strong> {character.name}
       </p>
@@ -29,7 +30,7 @@ function CharacterInfo({ character, episodes }: Props) {
         <strong>Location:</strong> {character.location.name}
       </p>
       <EpisodeTable episodes={episodes} />
-    </>
+    </Fragment>
   );
 }
 

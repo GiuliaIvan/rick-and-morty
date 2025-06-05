@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import CharacterDetails from "./components/CharacterDetails";
 import type { Character } from "./types/character";
 import SearchBar from "./components/SearchBar";
 import Pagination from "./components/Pagination";

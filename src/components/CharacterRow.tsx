@@ -3,26 +3,24 @@ import type { Character } from "../types/character";
 import type { Episode } from "../types/episode";
 import CharacterInfo from "./CharacterInfo";
 
-function CharacterDetails({ character }: { character: Character }) {
+function CharacterRow({ character }: { character: Character }) {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
 
   useEffect(() => {
-    const urls = character.episode;
-    const episodeIds = urls.map((url) => {
-      const parts = url.split("/");
-      return parts[parts.length - 1];
-    });
-    const joinedIds = episodeIds.join(",");
+    const fetchEpisodes = async () => {
+      const urls = character.episode;
+      const episodeIds = urls.map((url) => url.split("/").pop());
+      const joinedIds = episodeIds.join(",");
 
-    fetch(`https://rickandmortyapi.com/api/episode/${joinedIds}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setEpisodes(data);
-        } else {
-          setEpisodes([data]);
-        }
-      });
+      const res = await fetch(
+        `https://rickandmortyapi.com/api/episode/${joinedIds}`
+      );
+      const data = await res.json();
+
+      setEpisodes(Array.isArray(data) ? data : [data]);
+    };
+
+    fetchEpisodes();
   }, [character]);
 
   return (
@@ -47,4 +45,4 @@ function CharacterDetails({ character }: { character: Character }) {
   );
 }
 
-export default CharacterDetails;
+export default CharacterRow;
